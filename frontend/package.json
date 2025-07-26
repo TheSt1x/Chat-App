@@ -1,0 +1,35 @@
+{
+  "name": "chat-frontend",
+  "version": "1.0.0",
+  "description": "Фронтенд чат-приложения на Vue 3 + Pinia + Tailwind + Socket.IO",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "vue",
+    "chat",
+    "frontend",
+    "socket.io",
+    "tailwind",
+    "emoji"
+  ],
+  "author": "Рустам",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.7",
+    "emoji-picker-element": "^1.7.2",
+    "pinia": "^2.1.7",
+    "socket.io-client": "^4.7.2",
+    "vue": "^3.4.15",
+    "vue-router": "^4.3.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.4",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.2.8"
+  }
+}

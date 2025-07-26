@@ -1,0 +1,57 @@
+{
+  "users": [
+    {
+      "username": "Admin",
+      "password": "$2a$10$CnwalrmDJb5QKHDB5QwryObLQI5/QSYEuOHjMvReVFzfXgrTTI9Tm",
+      "id": 1,
+      "avatar": "",
+      "status": "Онлайн",
+      "displayName": "Администратор"
+    },
+    {
+      "username": "Гость",
+      "password": "$2a$10$iRhk8HRCqp90zjsUOJ/uveFZAXDjd1uDDNrxaj/H/nPV5FayAKIie",
+      "id": 2,
+      "avatar": "",
+      "status": "Онлайн",
+      "displayName": "Гость"
+    }
+  ],
+  "messages": [
+    {
+      "groupId": "2005",
+      "text": "1",
+      "sender": "Admin",
+      "timestamp": "2025-07-23T14:15:51.324Z",
+      "id": 1,
+      "reactions": []
+    },
+    {
+      "groupId": "2005",
+      "text": "2342😉😗😗😗😗😗",
+      "sender": "Admin",
+      "timestamp": "2025-07-23T14:15:57.639Z",
+      "id": 2,
+      "reactions": []
+    },
+    {
+      "groupId": "2005",
+      "text": "",
+      "sender": "Admin",
+      "timestamp": "2025-07-23T16:04:54.848Z",
+      "id": 3,
+      "reactions": [],
+      "edited": true,
+      "deleted": true
+    },
+    {
+      "groupId": "2005",
+      "text": "сячzx",
+      "sender": "Admin",
+      "timestamp": "2025-07-23T16:18:41.008Z",
+      "id": 4,
+      "reactions": [],
+      "edited": true
+    }
+  ]
+}
