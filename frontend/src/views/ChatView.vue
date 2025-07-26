@@ -1,6 +1,5 @@
 <template>
   <div class="flex h-screen overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 text-white font-sans">
-    <!-- Sidebar -->
     <aside class="w-64 hidden sm:flex flex-col justify-between bg-gray-900 border-r border-gray-700 p-6">
       <div>
         <h1 class="text-2xl font-bold mb-8">💬 ChatSphere</h1>
@@ -13,8 +12,6 @@
             <p class="text-gray-400 text-sm">Пользователь</p>
             <p class="text-lg font-semibold">{{ chat.username }}</p>
           </div>
-
-          <!-- Feature highlight -->
           <div class="mt-10 p-4 bg-white/10 rounded-lg border border-white/10">
             <h2 class="text-sm font-semibold text-indigo-400 mb-2">💡 Подсказка</h2>
             <p class="text-xs text-gray-300">
@@ -24,8 +21,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Buttons -->
       <div>
         <button
           @click="logout"
@@ -47,10 +42,7 @@
         </button>
       </div>
     </aside>
-
-    <!-- Main Chat Area -->
     <div class="flex flex-col flex-1 overflow-hidden">
-      <!-- Top Bar (for mobile) -->
       <header class="sm:hidden flex items-center justify-between bg-gray-900 px-4 py-3 border-b border-gray-700">
         <div>
           <p class="text-sm text-gray-400">Группа:</p>
@@ -62,8 +54,6 @@
           </svg>
         </button>
       </header>
-
-      <!-- Chat content -->
       <main class="flex-1 flex flex-col p-4 sm:p-6 backdrop-blur-md bg-white/5 rounded-lg mx-2 my-2 sm:m-4 overflow-hidden shadow-lg border border-white/10">
         <div class="flex items-center mb-4 gap-4">
           <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Bot Character" class="w-10 h-10" />
@@ -72,7 +62,6 @@
             <p class="text-xs text-gray-400">Общение начинается здесь ⚡</p>
           </div>
         </div>
-
         <div class="flex-1 overflow-y-auto mb-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
           <div v-for="m in chat.messages" :key="m.id" class="mb-2 group relative">
             <router-link :to="`/profile/${m.sender}`" class="font-bold hover:underline text-blue-700">
@@ -103,13 +92,26 @@
                 <button @click="() => chat.setEditingMessage(m)" class="text-indigo-400 hover:text-indigo-600 text-xs">✏️</button>
                 <button @click="deleteMsg(m)" class="text-red-400 hover:text-red-600 text-xs">🗑️</button>
               </span>
+              <div class="flex gap-1 mt-1 items-center">
+                <template v-for="(r, idx) in (m.reactions || []).reduce((acc, cur) => {
+                  const found = acc.find(a => a.emoji === cur.emoji);
+                  if (found) found.count++;
+                  else acc.push({ emoji: cur.emoji, count: 1 });
+                  return acc;
+                }, [])" :key="r.emoji">
+                  <button @click="onReactionClick(m, r.emoji)" class="px-2 py-0.5 rounded-full bg-gray-800 text-lg hover:bg-indigo-600 transition flex items-center">
+                    {{ r.emoji }} <span class="ml-1 text-xs">{{ r.count }}</span>
+                  </button>
+                </template>
+                <button @click="() => togglePicker(m.id)" class="px-2 py-0.5 rounded-full bg-gray-700 text-lg hover:bg-indigo-500 transition">+</button>
+                <emoji-picker v-if="showPickerFor === m.id" :data-picker-id="m.id" style="position:absolute;z-index:10;" />
+              </div>
             </template>
             <span class="text-xs text-gray-400 ml-2 align-middle">
               {{ new Date(m.timestamp).toLocaleTimeString() }}
             </span>
           </div>
         </div>
-
         <div>
           <MessageInput />
         </div>
@@ -119,16 +121,38 @@
 </template>
 
 <script setup>
+import 'emoji-picker-element';
 import ChatWindow from '../components/ChatWindow.vue';
 import MessageInput from '../components/MessageInput.vue';
 import { useChatStore } from '../store';
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { ref, nextTick, watch } from 'vue';
 
 const chat = useChatStore();
 const router = useRouter();
 const newMessage = ref('');
-// Удаляем editingId, editText, startEdit, cancelEdit, saveEdit
+const showPickerFor = ref(null);
+
+function togglePicker(msgId) {
+  showPickerFor.value = showPickerFor.value === msgId ? null : msgId;
+}
+function onReactionClick(m, emoji) {
+  chat.addReaction(m.id, emoji, m.groupId);
+}
+
+watch(showPickerFor, async (val, oldVal) => {
+  if (val !== null) {
+    await nextTick();
+    const picker = document.querySelector(`[data-picker-id='${val}']`);
+    if (picker) {
+      const handler = (e) => {
+        chat.addReaction(val, e.detail.unicode, chat.messages.find(msg => msg.id === val)?.groupId);
+        showPickerFor.value = null;
+      };
+      picker.addEventListener('emoji-click', handler, { once: true });
+    }
+  }
+});
 
 function logout() {
   chat.logout();

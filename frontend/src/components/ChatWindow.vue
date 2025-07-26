@@ -1,12 +1,6 @@
 <template>
-  <div
-    class="flex-1 overflow-y-auto p-4 bg-gray-900 rounded-lg scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent"
-  >
-    <div
-      v-for="m in chat.messages"
-      :key="m.id"
-      class="mb-2"
-    >
+  <div class="flex-1 overflow-y-auto p-4 bg-gray-900 rounded-lg scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+    <div v-for="m in chat.messages" :key="m.id" class="mb-2">
       <b>{{ m.sender === chat.username ? 'Вы' : m.sender }}</b>:
       <template v-if="m.type === 'text' || !m.type">
         {{ m.text }}
@@ -28,12 +22,10 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { useChatStore } from '../store';
 const chat = useChatStore();
 </script>
-
 <style scoped>
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;

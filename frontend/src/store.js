@@ -9,7 +9,7 @@ export const useChatStore = defineStore('chat', {
     token: '',
     currentGroup: '',
     messages: [],
-    editingMessage: null, // новое состояние
+    editingMessage: null,
   }),
   actions: {
     async register(username, password) {
@@ -43,29 +43,27 @@ export const useChatStore = defineStore('chat', {
         this.messages = msgs;
       });
       this.socket.on('newMessage', (msg) => {
-        console.log('[newMessage] Получено сообщение от сервера:', msg);
         this.messages.push(msg);
       });
       this.socket.on('messageEdited', (updatedMsgArr) => {
         const updatedMsg = Array.isArray(updatedMsgArr) ? updatedMsgArr[0] : updatedMsgArr;
-        console.log('[messageEdited] Пришло:', updatedMsg, 'messages:', this.messages.map(m => m.id));
         const idx = this.messages.findIndex(m => m.id === updatedMsg.id);
         if (idx !== -1) {
-          console.log('[messageEdited] Обновляю сообщение с id:', updatedMsg.id);
           this.messages[idx] = { ...this.messages[idx], ...updatedMsg };
-        } else {
-          console.warn('[messageEdited] Сообщение с таким id не найдено:', updatedMsg.id);
         }
       });
       this.socket.on('messageDeleted', (updatedMsgArr) => {
         const updatedMsg = Array.isArray(updatedMsgArr) ? updatedMsgArr[0] : updatedMsgArr;
-        console.log('[messageDeleted] Пришло:', updatedMsg, 'messages:', this.messages.map(m => m.id));
         const idx = this.messages.findIndex(m => m.id === updatedMsg.id);
         if (idx !== -1) {
-          console.log('[messageDeleted] Обновляю сообщение с id:', updatedMsg.id);
           this.messages[idx] = { ...this.messages[idx], ...updatedMsg };
-        } else {
-          console.warn('[messageDeleted] Сообщение с таким id не найдено:', updatedMsg.id);
+        }
+      });
+      this.socket.on('messageReacted', (updatedMsgArr) => {
+        const updatedMsg = Array.isArray(updatedMsgArr) ? updatedMsgArr[0] : updatedMsgArr;
+        const idx = this.messages.findIndex(m => m.id === updatedMsg.id);
+        if (idx !== -1) {
+          this.messages[idx] = { ...this.messages[idx], ...updatedMsg };
         }
       });
       this.socket.on('connect_error', (err) => {
@@ -78,7 +76,6 @@ export const useChatStore = defineStore('chat', {
       this.socket.emit('joinGroup', { groupId, username: this.username });
     },
     sendMessage(msg) {
-      // msg может быть строкой (текст) или объектом (файл, изображение и т.д.)
       let messageObj;
       if (typeof msg === 'string') {
         if (!msg.trim()) return;
@@ -105,13 +102,15 @@ export const useChatStore = defineStore('chat', {
         return;
       }
       this.socket.emit('sendMessage', { groupId: this.currentGroup, message: messageObj });
-      // Не добавляем в this.messages, ждём newMessage от сервера
     },
     editMessage(messageId, newText, groupId) {
       this.socket.emit('editMessage', { messageId, newText, groupId });
     },
     deleteMessage(messageId, groupId) {
       this.socket.emit('deleteMessage', { messageId, groupId });
+    },
+    addReaction(messageId, emoji, groupId) {
+      this.socket.emit('addReaction', { messageId, emoji, groupId });
     },
     setEditingMessage(msg) {
       this.editingMessage = msg;

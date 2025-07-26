@@ -1,14 +1,11 @@
 <template>
-  <div
-    class="flex items-center p-3 border-t border-gray-700 bg-gray-900"
-  >
+  <div class="flex items-center p-3 border-t border-gray-700 bg-gray-900">
     <input
       v-model="msg"
       @keyup.enter="send"
       :placeholder="chat.editingMessage ? 'Редактировать сообщение...' : 'Введите сообщение...'"
       class="flex-1 bg-gray-800 text-white placeholder-gray-400 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
     />
-    <!-- 📎 кнопка вложения -->
     <label class="ml-3 cursor-pointer flex items-center justify-center w-10 h-10 rounded-lg bg-gray-800 border border-gray-700 hover:border-indigo-500 transition">
       📎
       <input type="file" class="hidden" @change="handleFileUpload" />
@@ -26,7 +23,6 @@
     <button v-if="chat.editingMessage" @click="cancelEdit" class="ml-2 text-gray-400 hover:text-red-400 text-sm">Отмена</button>
   </div>
 </template>
-
 <script setup>
 import { ref, watch } from 'vue';
 import { useChatStore } from '../store';
@@ -35,7 +31,6 @@ import 'emoji-picker-element';
 const chat = useChatStore();
 const msg = ref('');
 
-// Следим за изменением editingMessage
 watch(() => chat.editingMessage, (val) => {
   if (val) {
     msg.value = val.text || val.content || '';

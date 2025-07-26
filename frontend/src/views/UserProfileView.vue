@@ -1,16 +1,13 @@
 <template>
   <div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-white px-4 py-8">
     <div class="w-full max-w-xl bg-white/5 backdrop-blur-md rounded-2xl shadow-lg border border-white/10 p-6">
-      <!-- Назад -->
       <router-link
         to="/chat"
         class="text-indigo-400 hover:underline text-sm mb-4 inline-block"
       >
         &larr; Назад
       </router-link>
-
       <h1 class="text-2xl font-bold mb-6 text-center text-white">🧑 Профиль</h1>
-
       <div v-if="profile" class="text-center">
         <div class="w-28 h-28 mx-auto mb-4">
           <img
@@ -25,14 +22,12 @@
           {{ profile.status || 'Нет статуса' }}
         </p>
       </div>
-
       <div v-else class="text-center text-gray-400 mt-10">
         Профиль не найден.
       </div>
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';

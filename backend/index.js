@@ -24,7 +24,6 @@ app.use(cors());
 app.use(express.json());
 app.use('/auth', authRoutes);
 
-// mongoose.connect('mongodb://localhost:27017/chat');
 
 let users = {};
 
@@ -114,9 +113,29 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('addReaction', async ({ messageId, emoji, groupId }) => {
+    try {
+      const { data: msgs } = await axios.get(`http://localhost:3001/messages?id=${messageId}`);
+      if (!msgs.length) return;
+      const msg = msgs[0];
+      let reactions = Array.isArray(msg.reactions) ? msg.reactions : [];
+      // Проверяем, есть ли уже реакция от этого пользователя с этим emoji
+      const existing = reactions.find(r => r.user === username && r.emoji === emoji);
+      if (!existing) {
+        reactions.push({ user: username, emoji });
+      } else {
+        reactions = reactions.filter(r => !(r.user === username && r.emoji === emoji));
+      }
+      await axios.patch(`http://localhost:3001/messages/${messageId}`, { reactions });
+      const { data: updatedMsg } = await axios.get(`http://localhost:3001/messages/${messageId}`);
+      io.to(groupId).emit('messageReacted', updatedMsg);
+    } catch (e) {
+      socket.emit('error', 'Ошибка добавления реакции');
+    }
+  });
+
   socket.on('disconnect', () => {
     delete users[socket.id];
-    // Можно добавить broadcast о выходе пользователя
   });
 });
 
